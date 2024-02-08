@@ -3,7 +3,7 @@ section .data
     len equ $ - msg
 
 section .text
-
+    
     global _start
         
 _start:
@@ -15,11 +15,11 @@ _start:
     mov ecx, msg  ;наша строка
     mov edx, len  ;длина строки
 
-    int 0x80
+    int 80h
 
     ;код для выхода из программы
 
     mov eax, 1    ;системный вызов sys_exit 
     mov ebx, 0    ;код ошибки
 
-    int 0x80
+    int 80h
