@@ -5,11 +5,11 @@ section .data
 		
 		math_message         db  "This program calculates Z = (XY - 1)/(X + Y):", 0xa, 0xd
 		math_message_len     equ $-math_message
-		z_message            db  10, "Result: Z = "
+		z_message            db  "Result: Z = "
 		z_message_len        equ $-z_message
 		enter_message_x      db  "Enter: X = "
 		enter_message_x_len  equ $-enter_message_x
-		enter_message_y      db  10, "Enter: Y = ", 10
+		enter_message_y      db  "Enter: Y = "
 		enter_message_y_len  equ $-enter_message_y
 		numberX 	 	     dd  -2 
 		numberY			     dd  4
@@ -47,14 +47,32 @@ section .text
 						mov ecx, num
 						call atoi
 
-						; дальше недоделанно
+						push eax
 
-	  					xor eax, eax
-						xor ebx, ebx
+						mov eax, 4
+						mov ebx, 1
+						mov ecx, enter_message_y
+						mov edx, enter_message_y_len
 
-						mov eax, [numberX]
+						int 80h
+
+						mov eax, 3
+						mov ebx, 0
+						mov ecx, num
+						mov edx, 5
+
+						int 80h
+
+						mov ecx, num
+						call atoi
+
+						mov ebx, eax
+						pop eax
+
+
+
 						mov ecx, eax
-						mov ebx, [numberY]
+
 						imul ebx
 
 						dec eax
