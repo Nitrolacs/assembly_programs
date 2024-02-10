@@ -1,4 +1,4 @@
-global main                           
+global main
 
 extern scanf 
 extern printf
@@ -12,8 +12,8 @@ section .data
 		enter_message_x      db  "Enter: X = ", 0
 		enter_message_format dd  "%s", 10, 0
 		enter_message_y      db  "Enter: Y = ", 0
-		error_message        db  "Division by zero occurred, the program restarted...", 10, 0
-		enter_message_y_len  equ $-enter_message_y
+		error_message        db  "Division by zero occurred, exit the program...", 10, 0
+		residual_message     db  "Residual: %d/%d", 10, 0
 		number               dd  0
 															 
 																				   
@@ -21,6 +21,8 @@ section .bss
 		numX            resb     4
 		numY            resb     4
 		result          resb     4
+		residual        resb     4
+		divider         resb     4
 
 
 section .text
@@ -58,15 +60,33 @@ main:
 						test ebx, ebx
 
 						jz division_by_zero
+						
+						mov [divider],  ebx
 
 						idiv ebx
+
+						mov [residual], edx
 				 		
   						mov [result], eax
                         push dword [result]           ; положить на стек число
-                        push z_message        ; положить на стек адрес строки формата
-                        call printf        ; вызвать printf
+                        push z_message       		  ; положить на стек адрес строки формата
+                        call printf                   ; вызвать printf
 
-					    push 1
+                        mov edx, [divider]
+                        neg edx
+                        mov [result], edx
+
+                        push dword [result]
+
+                        mov edx, [residual]
+                        mov [result], edx
+
+                        push dword [result]
+
+                        push residual_message
+                        call printf
+                        
+end_of_program:			push 1
                         call exit
 
 
@@ -74,5 +94,4 @@ division_by_zero:       push error_message
 						push enter_message_format
 						call printf
 
-						jmp main
-
+						jmp end_of_program
