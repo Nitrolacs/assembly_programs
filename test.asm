@@ -6,7 +6,8 @@ extern exit
 
 section .data
 		
-		math_message         db  "This program calculates Z = (XY - 1)/(X + Y):", 10, 0
+		math_message_first   db  "This part calculates Z = (XY - 1)/(X + Y):", 10, 0
+		math_message_second  db  "This part calculates Z = X^3 + Y - 1:", 10, 0 
 		input                db  "%d", 0
 		z_message            db  "Result: Z = %d", 10, 0
 		enter_message_x      db  "Enter: X = ", 0
@@ -28,10 +29,6 @@ section .bss
 section .text
 
 main:							   
-						push math_message
-						push enter_message_format
-						call printf
-
 						push enter_message_x
 						push enter_message_format
 						call printf
@@ -47,6 +44,10 @@ main:
 						push numY
 						push input
 						call scanf
+
+first_exercise:			push math_message_first
+						push enter_message_format
+						call printf
 
 						mov eax, [numX]
 						mov ebx, [numY]
@@ -73,7 +74,7 @@ main:
                         call printf                   ; вызвать printf
 
                         cmp dword [residual], 0
-                        jz end_of_program
+                        jz second_exercise
 
                         mov edx, [divider]
                         neg edx
@@ -88,6 +89,26 @@ main:
 
                         push residual_message
                         call printf
+
+second_exercise:        push math_message_second
+						push enter_message_format
+						call printf
+
+						mov eax, [numX]
+						mov ebx, [numY]
+
+						mov ecx, eax
+
+						mul eax
+						mul ecx
+
+						add eax, ebx
+						dec eax
+
+						mov [result], eax
+						push dword [result]
+						push z_message
+						call printf
                         
 end_of_program:			push 1
                         call exit
