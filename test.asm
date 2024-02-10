@@ -17,7 +17,8 @@ section .data
 															 
 																				   
 section .bss
-		num             resb     4
+		numX            resb     4
+		numY            resb     4
 		result          resb     4
 
 
@@ -32,29 +33,29 @@ main:
 						push enter_message_format
 						call printf
 
-						push num
+						push numX
 						push input
 						call scanf 
-
-						mov eax, num
 
 						push enter_message_y
 						push enter_message_format
 						call printf
 
-						push num
+						push numY
 						push input
 						call scanf
 
-						mov ebx, num
+						mov eax, [numX]
+						mov ebx, [numY]
+						
 						mov ecx, eax
 						imul ebx
 						dec eax
 						add ebx, ecx
 						idiv ebx
 				 		
-  						mov [num], eax
-                        push dword [num]           ; положить на стек число
+  						mov [result], eax
+                        push dword [result]           ; положить на стек число
                         push z_message        ; положить на стек адрес строки формата
                         call printf        ; вызвать printf
 
