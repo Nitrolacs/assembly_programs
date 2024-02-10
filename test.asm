@@ -61,16 +61,19 @@ main:
 
 						jz division_by_zero
 						
-						mov [divider],  ebx
+						mov [divider], ebx
 
 						idiv ebx
 
 						mov [residual], edx
-				 		
+				 			
   						mov [result], eax
                         push dword [result]           ; положить на стек число
                         push z_message       		  ; положить на стек адрес строки формата
                         call printf                   ; вызвать printf
+
+                        cmp dword [residual], 0
+                        jz end_of_program
 
                         mov edx, [divider]
                         neg edx
