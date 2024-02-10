@@ -11,7 +11,8 @@ section .data
 		z_message            db  "Result: Z = %d", 10, 0
 		enter_message_x      db  "Enter: X = ", 0
 		enter_message_format dd  "%s", 10, 0
-		enter_message_y      db  "Enter: Y = "
+		enter_message_y      db  "Enter: Y = ", 0
+		error_message        db  "Division by zero occurred, the program restarted...", 10, 0
 		enter_message_y_len  equ $-enter_message_y
 		number               dd  0
 															 
@@ -51,7 +52,13 @@ main:
 						mov ecx, eax
 						imul ebx
 						dec eax
+
 						add ebx, ecx
+
+						test ebx, ebx
+
+						jz division_by_zero
+
 						idiv ebx
 				 		
   						mov [result], eax
@@ -59,5 +66,13 @@ main:
                         push z_message        ; положить на стек адрес строки формата
                         call printf        ; вызвать printf
 
-                        push 1
+					    push 1
                         call exit
+
+
+division_by_zero:       push error_message
+						push enter_message_format
+						call printf
+
+						jmp main
+
