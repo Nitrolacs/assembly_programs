@@ -9,6 +9,8 @@ section .data
 		math_message_first   db  "This part calculates Z = (XY - 1)/(X + Y):", 10, 0
 		math_message_second  db  "This part calculates Z = X^3 + Y - 1:", 10, 0 
 		math_message_third   db  "This part calculates Z = (XY + 1)/X^2:", 10, 0
+		math_message_fourth  db  "This part calculates Z = (X + Y)/(X - Y):", 10, 0
+		math_message_fifth   db  "This part calculates Z = - 1/X^3 + 3:", 10, 0
 		input                db  "%d", 0
 		z_message            db  "Result: Z = %d", 10, 0
 		enter_message_x      db  "Enter: X = ", 0
@@ -162,7 +164,75 @@ break_point:			idiv ebx
                         push residual_message
                         call printf
 
-					 
+fourth_exercise:		push math_message_fourth
+						push enter_message_format
+						call printf
+
+						mov eax, [numX]
+						mov ebx, [numY]
+
+						sub eax, ebx
+
+						test eax, eax
+						jz division_by_zero
+
+						mov [divider], eax
+
+						mov eax, [numX]
+						add eax, ebx
+
+						idiv dword [divider]
+				
+						mov [residual], edx
+				 			
+  						mov [result], eax
+                        push dword [result]           ; положить на стек число
+                        push z_message       		  ; положить на стек адрес строки формата
+                        call printf                   ; вызвать printf
+
+                        cmp dword [residual], 0
+                        jz fifth_exercise
+
+                        mov edx, [divider]
+                        neg edx
+                        mov [result], edx
+
+                        push dword [result]
+
+                        mov edx, [residual]
+                        mov [result], edx
+
+                        push dword [result]
+
+                        push residual_message
+                        call printf						
+
+fifth_exercise:			push math_message_fifth
+						push enter_message_format
+						call printf
+
+						mov eax, [numX]
+
+						mov ecx, eax
+						mul eax	
+						mul ecx
+
+						test eax, eax
+						jz division_by_zero
+
+						mov eax, -1
+
+						idiv dword [divider]
+
+						add eax, 3
+				 			
+  						mov [result], eax
+                        push dword [result]           ; положить на стек число
+                        push z_message       		  ; положить на стек адрес строки формата
+                        call printf                   ; вызвать printf
+                        
+                        jmp end_of_program
+
 end_of_program:			push 1
                         call exit
 
