@@ -80,8 +80,14 @@ first_exercise:			push math_message_first
                         jz second_exercise
 
                         mov edx, [divider]
-                        neg edx
-                        mov [result], edx
+                        
+						cmp edx, 0
+						jl .neg_divider
+						jmp end_of_first_exercise
+
+.neg_divider:			neg edx
+
+end_of_first_exercise:  mov [result], edx
 
                         push dword [result]
 
@@ -139,7 +145,7 @@ third_exercise:			push math_message_third
 
 						pop eax
 
-break_point:			idiv ebx
+						idiv ebx
 						mov [residual], edx
 				 			
   						mov [result], eax
@@ -194,8 +200,14 @@ fourth_exercise:		push math_message_fourth
                         jz fifth_exercise
 
                         mov edx, [divider]
-                        neg edx
-                        mov [result], edx
+                        
+                        cmp edx, 0
+                        jl .neg_divider
+                        jmp end_of_fourth_exercise
+
+.neg_divider:			neg edx
+
+end_of_fourth_exercise: mov [result], edx
 
                         push dword [result]
 
@@ -205,7 +217,7 @@ fourth_exercise:		push math_message_fourth
                         push dword [result]
 
                         push residual_message
-                        call printf						
+                        call printf
 
 fifth_exercise:			push math_message_fifth
 						push enter_message_format
@@ -214,28 +226,55 @@ fifth_exercise:			push math_message_fifth
 						mov eax, [numX]
 
 						mov ecx, eax
-						mul eax	
-						mul ecx
+						imul eax	
+						imul ecx
 
 						test eax, eax
 						jz division_by_zero
 
-						mov eax, -1
+						mov [divider], eax
+
+						mov ebx, 3
+						imul ebx
+						dec eax
 
 						idiv dword [divider]
 
-						add eax, 3
+						mov dword [residual], edx
 				 			
   						mov [result], eax
                         push dword [result]           ; положить на стек число
                         push z_message       		  ; положить на стек адрес строки формата
                         call printf                   ; вызвать printf
-                        
-                        jmp end_of_program
+                        	
+                        cmp dword [residual], 0
+                        jz end_of_program
+
+                        mov edx, [divider]
+
+                        cmp edx, 0
+						jl .neg_divider
+						jmp end_of_fifth_exercise
+
+.neg_divider:           neg edx
+
+end_of_fifth_exercise:  mov [result], edx
+
+                        push dword [result]
+
+                        mov edx, [residual]
+                        mov [result], edx
+
+                        push dword [result]
+
+                        push residual_message
+                        call printf
+
+                       	jmp end_of_program
+                               
 
 end_of_program:			push 1
                         call exit
-
 
 division_by_zero:       push error_message
 						push enter_message_format
