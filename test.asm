@@ -69,7 +69,16 @@ first_exercise:			push math_message_first
 
 						idiv ebx
 
-						mov [residual], edx
+						cmp eax, 0
+						jz .skip_neg_check
+
+						cmp edx, 0
+						jl .neg_residual
+						jmp .skip_neg_check
+
+.neg_residual:          neg edx									
+
+.skip_neg_check:		mov [residual], edx
 				 			
   						mov [result], eax
                         push dword [result]           ; положить на стек число
@@ -92,6 +101,7 @@ end_of_first_exercise:  mov [result], edx
                         push dword [result]
 
                         mov edx, [residual]
+
                         mov [result], edx
 
                         push dword [result]
@@ -148,7 +158,17 @@ third_exercise:			push math_message_third
 						cdq
 
 						idiv ebx
-						mov [residual], edx
+
+						cmp eax, 0
+						jz .skip_neg_check
+
+						cmp edx, 0
+						jl .neg_residual
+						jmp .skip_neg_check
+
+.neg_residual:          neg edx												
+						
+.skip_neg_check:		mov [residual], edx
 				 			
   						mov [result], eax
                         push dword [result]           ; положить на стек число
@@ -190,8 +210,17 @@ fourth_exercise:		push math_message_fourth
 
 						cdq
 						idiv dword [divider]
+
+						cmp eax, 0
+						jz .skip_neg_check
+
+						cmp edx, 0
+						jl .neg_residual
+						jmp .skip_neg_check
+
+.neg_residual:			neg edx						
 				
-						mov [residual], edx
+.skip_neg_check:		mov [residual], edx
 				 			
   						mov [result], eax
                         push dword [result]           ; положить на стек число
@@ -242,7 +271,16 @@ fifth_exercise:			push math_message_fifth
 
 						idiv dword [divider]
 
-						mov dword [residual], edx
+break_point:			cmp eax, 0
+						jz .skip_neg_check
+
+						cmp edx, 0
+						jl .neg_residual
+						jmp .skip_neg_check
+
+.neg_residual:			neg edx						
+
+.skip_neg_check:		mov dword [residual], edx
 				 			
   						mov [result], eax
                         push dword [result]           ; положить на стек число
