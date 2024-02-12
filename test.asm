@@ -127,7 +127,7 @@ third_exercise:			push math_message_third
 						mov ebx, [numY]
 
 						mov ecx, eax
-						imul ebx
+						imul ebx   
 						inc eax
 
 						push eax
@@ -145,6 +145,8 @@ third_exercise:			push math_message_third
 
 						pop eax
 
+						cdq
+
 						idiv ebx
 						mov [residual], edx
 				 			
@@ -157,7 +159,6 @@ third_exercise:			push math_message_third
                         jz second_exercise
 
                         mov edx, [divider]
-                        neg edx
                         mov [result], edx
 
                         push dword [result]
@@ -187,6 +188,7 @@ fourth_exercise:		push math_message_fourth
 						mov eax, [numX]
 						add eax, ebx
 
+						cdq
 						idiv dword [divider]
 				
 						mov [residual], edx
