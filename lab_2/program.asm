@@ -10,9 +10,11 @@ section .data
 	enter_message_a        db  "Enter: a = ", 0
 	enter_message_format   dd  "%s", 10, 0
 	output_message_format  db  "y = %f", 10, 0
-	numI                   dd  0.0
+	numI                   dd  0
 	Four                   dd  4.0
 	One                    dd  1.0
+
+	tmp_format             db  "%f", 0, 10
 
 section .bss
 	numX				   resd    1      
@@ -58,7 +60,7 @@ main:
 
 	loop_start:
 		mov [counter], ecx
-
+		finit
 		fld  dword [Four]
 		fld  dword [numX]
 		fadd dword [numI]
@@ -79,8 +81,15 @@ main:
 	call printf
 	add esp, 12
 
-	mov eax, [One]
-break_point:	add [numI], eax
+	fld dword [One]
+	fadd dword [numI]
+	fstp dword [numI]
+
+	finit
+	fld dword [numI]
+	fstp qword [esp]
+	push tmp_format
+	call printf
 
 	mov ecx, [counter]
 	loop loop_start
