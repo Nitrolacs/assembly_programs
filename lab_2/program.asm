@@ -14,8 +14,6 @@ section .data
 	Four                   dd  4.0
 	One                    dd  1.0
 
-	tmp_format             db  "%f", 0, 10
-
 section .bss
 	numX				   resd    1      
 	numA                   resd    1
@@ -60,7 +58,7 @@ main:
 
 	loop_start:
 		mov [counter], ecx
-		finit
+		
 		fld  dword [Four]
 		fld  dword [numX]
 		fadd dword [numI]
@@ -84,13 +82,7 @@ main:
 	fld dword [One]
 	fadd dword [numI]
 	fstp dword [numI]
-
-	finit
-	fld dword [numI]
-	fstp qword [esp]
-	push tmp_format
-	call printf
-
+                
 	mov ecx, [counter]
 	loop loop_start
 
