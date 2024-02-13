@@ -1,76 +1,74 @@
-global main
-
-extern scanf
-extern printf
-extern exit
-
-section .data          
-	input 	               db  "%f", 0
-	enter_message_x        db  "Enter: x = ", 0
-	enter_message_a        db  "Enter: a = ", 0
-	enter_message_format   dd  "%s", 10, 0
-	output_message_format  db  "y = %f", 10, 0
-	numI                   dd  0.0
-	Four                   dd  4.0
-	One                    dd  1.0
-
-section .bss
-	numX				   resd    1      
-	numA                   resd    1
-	numY1                  resd    1
-	numY2                  resd    1
-	counter                resd    1
+section .data
+    X dd 0.0
+    A dd 0.0
+    Y dd 0.0
+    Y1 dd 0.0
+    Y2 dd 0.0
+    Four dd 4.0
+    Seven dd 7.0
+    Two dd 2.0
+    i dd 0
+    format db "%f", 0
+    format_output db "Y = %f", 10, 0
 
 section .text
-	
+    extern printf
+    extern scanf
+    extern exit
+    global main
 main:
-	push enter_message_x
-	push enter_message_format
-	call printf
+    ; Ввод X
+    push X
+    push format
+    call scanf
+    add esp, 8
 
-	push numX
-	push input
-	call scanf
+    ; Ввод A
+    push A
+    push format
+    call scanf
+    add esp, 8
 
-	push enter_message_a
-	push enter_message_format
-	call printf
+    mov ecx, 10 ; цикл от 0 до 9
+    loop_start:
+        fld dword [X] ; загрузить X в стек FPU
+        fadd dword [i] ; прибавить i к X
+        fld dword [Four]
+        fcomi st0, st1 ; сравнить X и 4
+        jbe calculate_y1_less_equal ; если X <= 4, перейти к calculate_y1_less_equal
+        fsub dword [A] ; иначе вычесть A из X
+        jmp calculate_y2 ; перейти к calculate_y2
+    calculate_y1_less_equal:
+        fmul dword [Four] ; умножить X на 4
+    calculate_y2:
+        fstp dword [Y1] ; сохранить результат в Y1 и очистить стек
+        fld dword [X] ; загрузить X в стек FPU
+        fild dword [i] ; загрузить i в стек FPU
+        faddp st1 ; прибавить i к X
+        fistp dword [X] ; сохранить результат в X и очистить стек
+        mov eax, dword [X]
+        and eax, 1 ; проверить, является ли X нечетным
+        jnz y2_is_seven ; если X нечетное, перейти к y2_is_seven
+        fdiv dword [Two] ; иначе поделить X на 2
+        fadd dword [A] ; прибавить A
+        jmp end_y2 ; перейти к end_y2
+    y2_is_seven:
+        fld dword [Seven] ; загрузить 7 в стек FPU
+    end_y2:
+        fstp dword [Y2] ; сохранить результат в Y2 и очистить стек
+        fld dword [Y1] ; загрузить Y1 в стек FPU
+        fadd dword [Y2] ; прибавить Y2
+        fstp dword [Y] ; сохранить результат в Y и очистить стек
 
-	push numA
-	push input
-	call scanf
+        ; Вывод Y
+        push dword [Y]
+        push format_output
+        call printf
+        add esp, 8
 
-	mov ecx, 10 ; цикл от 0 до 9
+        inc dword [i] ; увеличить i на 1
+        loop loop_start
 
-	loop_start:
-		mov [counter], ecx
-
-		fld  dword [Four]
-		fld  dword [numX]
-		fadd dword [numI]
-		fcomi st0, st1   ; сравниваем x и 4
-		fstp st0         ; очищаем стек
-		jbe calculate_y1_less_equal  ; если x <= 4, то переходим к соотв. метке
-		fsub dword [numA] ; иначе мы вычитаем a из x
-		jmp calculate_y2  ; переходим к вычислению y2
-
-	calculate_y1_less_equal:
-		fmul dword [Four] ; умножаем x на 4
-
-	calculate_y2:
-		
-	sub esp, 8
-	fstp qword [esp]
-
-	push output_message_format
-	call printf
-	add esp, 12
-
-	mov eax, [One]
-break_point:	add [numI], eax
-
-	mov ecx, [counter]
-	loop loop_start
-
-	push 0
-	call exit	
+    ; Завершение программы
+    push 0
+    call exit

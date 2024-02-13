@@ -11,12 +11,15 @@ section .data
 	enter_message_format   dd  "%s", 10, 0
 	output_message_format  db  "y = %f", 10, 0
 	numI                   dd  0
+	Seven                  dd  7.0
 	Four                   dd  4.0
+	Two                    dd  2.0
 	One                    dd  1.0
 
 section .bss
 	numX				   resd    1      
 	numA                   resd    1
+	numY                   resd    1
 	numY1                  resd    1
 	numY2                  resd    1
 	counter                resd    1
@@ -71,6 +74,29 @@ main:
 		fmul dword [Four] ; умножаем x на 4
 
 	calculate_y2:
+		fstp dword [numY1]
+
+		;finit
+		fld dword [numX]
+		fadd dword [numI]
+		fistp dword [numX]
+		mov eax, dword [numX]
+		and eax, 1
+		jnz y2_is_seven
+		fdiv dword [Two]
+		fadd dword [numA]
+		jmp end_y2
+
+	y2_is_seven:
+		fld dword [Seven]	
+
+	end_y2:
+		fstp dword [numY2]
+		fld dword [numY1]
+		fadd dword [numY2]
+		fstp dword [numY]
+
+	fld dword [numY]
 		
 	sub esp, 8
 	fstp qword [esp]
@@ -84,7 +110,7 @@ main:
 	fstp dword [numI]
                 
 	mov ecx, [counter]
-	loop loop_start
+	;loop loop_start
 
 	push 0
 	call exit	
