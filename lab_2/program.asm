@@ -111,7 +111,8 @@ main:
 	fstp dword [numI]
                 
 	mov ecx, [counter]
-	;loop loop_start
+	dec ecx
+	jnz loop_start
 
 	push 0
 	call exit	
