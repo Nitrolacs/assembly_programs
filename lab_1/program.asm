@@ -313,7 +313,7 @@ end_of_fifth_exercise:  mov [result], edx
                        	jmp end_of_program
                                
 
-end_of_program:			push 1
+end_of_program:			push 0
                         call exit
 
 division_by_zero:       push error_message
