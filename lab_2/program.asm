@@ -79,10 +79,11 @@ main:
 		;finit
 		fld dword [numX]
 		fadd dword [numI]
-		fistp dword [numX]
+		fstp dword [numX]  ; Используйте fstp вместо fistp
 		mov eax, dword [numX]
 		and eax, 1
 		jnz y2_is_seven
+		fld dword [numX]  ; Загрузите numX обратно в стек FPU
 		fdiv dword [Two]
 		fadd dword [numA]
 		jmp end_y2
