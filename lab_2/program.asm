@@ -19,6 +19,7 @@ section .bss
 	numA                   resd    1
 	numY1                  resd    1
 	numY2                  resd    1
+	counter                resd    1
 
 ; Задание.
 ; Разработать программу на Ассемблере, реализующую вычисление
@@ -56,6 +57,8 @@ main:
 	mov ecx, 10 ; цикл от 0 до 9
 
 	loop_start:
+		mov [counter], ecx
+
 		fld  dword [Four]
 		fld  dword [numX]
 		fadd dword [numI]
@@ -70,17 +73,17 @@ main:
 	calculate_y2:
 		
 	sub esp, 8
-
 	fstp qword [esp]
 
 	push output_message_format
 	call printf
-
 	add esp, 12
 
 	mov eax, [One]
-	add [numI], eax
-	;loop loop_start
+break_point:	add [numI], eax
+
+	mov ecx, [counter]
+	loop loop_start
 
 	push 0
 	call exit	
