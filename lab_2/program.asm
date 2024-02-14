@@ -15,6 +15,7 @@ section .data
 	Four                   dd  4.0
 	Two                    dd  2.0
 	One                    dd  1.0
+	Zero                   dd  0
 
 section .bss
 	numX				   resd    1      
@@ -75,27 +76,34 @@ main:
 
 	calculate_y2:
 		fstp dword [numY1]
-
-		;finit
-		fld dword [numX]
-		fadd dword [numI]
-		fstp dword [numX]  ; Используйте fstp вместо fistp
-		mov eax, dword [numX]
-		and eax, 1
-		jnz y2_is_seven
-		fld dword [numX]  ; Загрузите numX обратно в стек FPU
-		fdiv dword [Two]
-		fadd dword [numA]
-		jmp end_y2
-
+	
+	    fld dword [numX]
+	    fadd dword [numI]
+	    fstp dword [numX]  ; Используйте fstp вместо fistp
+	
+	    fld dword [Two]
+	    fld dword [numX]
+	    fprem
+	    fabs
+	    fcomp dword [Zero]  ; Сравниваем с нулем
+	    fnstsw ax
+	    sahf
+	    jz y2_is_even
+	
 	y2_is_seven:
-		fld dword [Seven]	
-
+	    fld dword [Seven]
+	    jmp end_y2
+	
+	y2_is_even:
+	    fld dword [numX]  ; Загрузите numX обратно в стек FPU
+	    fdiv dword [Two]
+	    fadd dword [numA]
+	
 	end_y2:
-		fstp dword [numY2]
-		fld dword [numY1]
-		fadd dword [numY2]
-		fstp dword [numY]
+	    fstp dword [numY2]
+	    fld dword [numY1]
+	    fadd dword [numY2]
+	    fstp dword [numY]
 
 	fld dword [numY]
 		
