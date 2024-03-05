@@ -1,13 +1,13 @@
 global main
 
-extern scanf, printf, exit
+extern scanf, printf, exit, putchar
 
 section .data
 	order_input_message db "Enter the order of the square matrix M: ", 0
 	order_input_format  db "%d", 0
 	string_output_format dd "%s", 10, 0
 	element_input_message db "Enter element [%d, %d]: ", 0
-	element_format      db "%f", 0
+	element_format      db "%lf", 0
 
 	tmp_output          db "Size in bytes: %d", 10, 0
 
@@ -97,8 +97,58 @@ input_elements_loop:
                 
                                 
         
-print_original_matrix:        
-        
-        mov eax, 1
-	push 0
-	call exit
+print_original_matrix:
+
+    mov ecx, 1 ; Счётчик строк
+    mov edi, [order] ; Порядок матрицы
+    mov esi, matrix ; Указатель на начало матрицы
+
+    print_rows_loop:
+        cmp ecx, edi
+        ja end_print ; Если все строки напечатаны, выходим из цикла
+
+        mov ebx, 1 ; Счётчик столбцов
+
+        print_columns_loop:
+            cmp ebx, edi
+            ja end_row ; Если все столбцы напечатаны, переходим к следующей строке
+
+            push eax ; Сохраняем значение регистра eax
+            push ebx ; Сохраняем значение регистра ebx
+
+            mov eax, ecx
+            dec eax
+            imul edi
+            mov ebx, 8
+            imul ebx
+
+            pop ebx
+            lea esi, [matrix + eax + 8*(ebx-1)]
+
+            pop eax ; Восстанавливаем значение регистра eax
+
+            fld qword [esi] ; Загружаем значение в стек FPU
+
+            sub esp, 8 ; Выделяем место в стеке для числа с плавающей точкой
+            fstp qword [esp] ; Сохраняем значение из стека FPU в стек
+
+            push element_format
+            call printf
+            add esp, 12 ; Удаляем format и число с плавающей точкой из стека
+
+            inc ebx
+            jmp print_columns_loop
+
+        end_row:
+            ; Печатаем новую строку
+            push 10 ; ASCII код для новой строки
+            call putchar
+
+            inc ecx
+            jmp print_rows_loop
+
+    end_print:
+
+    push 0
+    call exit
+
