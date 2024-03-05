@@ -9,7 +9,7 @@ section .data
 	enter_message_x        db  "Enter: x = ", 0
 	enter_message_a        db  "Enter: a = ", 0
 	enter_message_format   dd  "%s", 10, 0
-	output_message_format  db  "y = %f", 10, 0
+	output_message_format  db  "y = %.1f", 10, 0
 	numI                   dd  0
 	Seven                  dd  7.0
 	Four                   dd  4.0
@@ -114,9 +114,9 @@ main:
 	call printf
 	add esp, 12
 
-	fld dword [One]
-	fadd dword [numI]
-	fstp dword [numI]
+	fld dword [numX]
+	fadd dword [One]
+	fstp dword [numX]
                 
 	mov ecx, [counter]
 	dec ecx
