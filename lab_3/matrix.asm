@@ -97,9 +97,7 @@ input_elements_loop:
         end_inner:
         inc ecx
         jmp input_elements_loop
-                
-
-                                                                                              
+                                                                                                             
         
 print_original_matrix:
 
@@ -167,116 +165,42 @@ print_original_matrix:
             inc ecx
             jmp print_rows_loop
                   
-
-
     end_print:
-
-
-; Поворот матрицы на 90 градусов по часовой стрелке
-rotate_90:
-    mov eax, [order] ; Порядок матрицы
-    mov ebx, matrix  ; Указатель на начало матрицы
-    mov ecx, 0       ; Счётчик строк
-    mov edx, 0       ; Счётчик столбцов
-
-    rotate_90_loop:
-        cmp ecx, eax
-        jge end_rotate_90 ; Если все строки обработаны, выходим из цикла
-
-        mov esi, ebx ; Сохраняем указатель на начало строки
-        add ebx, 8   ; Переходим к следующему элементу строки
-        inc edx      ; Увеличиваем счётчик столбцов
-
-        rotate_90_inner_loop:
-            cmp edx, eax
-            jge end_rotate_90_inner ; Если все столбцы обработаны, переходим к следующей строке
-
-            push eax ; Сохраняем значение регистра eax
-            push ebx ; Сохраняем значение регистра ebx
-            push ecx ; Сохраняем значение регистра ecx
-            push edx ; Сохраняем значение регистра edx
-
-            ; Вычисляем индекс элемента, с которым нужно поменять местами текущий элемент
-            mov eax, ecx
-            neg eax
-            add eax, [order]
-            dec eax
-            imul eax, [order]
-            add eax, edx
-            mov ebx, 8
-            imul ebx
-            lea edi, [matrix + eax] ; Указатель на элемент для обмена
-
-            ; Меняем местами значения элементов
-            fld qword [esi]
-            fld qword [edi]
-            fstp qword [esi]
-            fstp qword [edi]
-
-            pop edx ; Восстанавливаем значение регистра edx
-            pop ecx ; Восстанавливаем значение регистра ecx
-            pop ebx ; Восстанавливаем значение регистра ebx
-            pop eax ; Восстанавливаем значение регистра eax
-
-            add ebx, 8 ; Переходим к следующему элементу строки
-            inc edx    ; Увеличиваем счётчик столбцов
-            jmp rotate_90_inner_loop
-
-        end_rotate_90_inner:
-            mov ebx, esi ; Восстанавливаем указатель на начало строки
-            add ebx, eax ; Переходим к следующей строке
-            add ebx, eax
-            add ebx, eax
-            add ebx, eax
-            add ebx, eax
-            add ebx, eax
-            add ebx, eax
-            add ebx, eax ; Умножаем на 8, так как каждый элемент занимает 8 байт
-            mov edx, 0   ; Обнуляем счётчик столбцов
-            inc ecx      ; Увеличиваем счётчик строк
-            jmp rotate_90_loop
-
-    end_rotate_90:
     
-        
 print_matrix:
    
     push matrix_90_message
     push string_output_format
     call printf
        
-    mov ecx, 1 ; Счётчик строк
+    mov ecx, 1 ; Счётчик колонок
     mov edi, [order] ; Порядок матрицы
     mov esi, matrix ; Указатель на начало матрицы
 
-    _print_rows_loop:
-        cmp ecx, edi
-        ja _end_print ; Если все строки напечатаны, выходим из цикла
+    _print_columns_loop:
+        cmp ecx, edi 
+        ja _end_print ; Если все колонки напечатаны, то выходим из цикла
 
-        mov ebx, 1 ; Счётчик столбцов
+        mov ebx, [order] ; Счётчик строк
 
-        _print_columns_loop:
-            cmp ebx, edi
-            ja _end_row ; Если все столбцы напечатаны, переходим к следующей строке
+        _print_rows_loop:
+            cmp ebx, 1
+            jb _end_row ; Если все строки напечатаны, переходим к следующему столбцу
 
+
+            ; Расчет положения элемента в массиве
             push eax ; Сохраняем значение регистра eax
             push ebx ; Сохраняем значение регистра ebx
+            push ecx ; Сохраняем значение регистра ecx
 
-            mov eax, ecx
+            mov eax, ebx
             dec eax
             imul edi
             mov ebx, 8
             imul ebx
             
+            lea esi, [matrix + eax + 8*(ecx-1)]
             
-
-            pop ebx
-            lea esi, [matrix + eax + 8*(ebx-1)]
-
-            pop eax ; Восстанавливаем значение регистра eax
-            
-            push ecx
-
             fld qword [esi] ; Загружаем значение в стек FPU
 
             sub esp, 8 ; Выделяем место в стеке для числа с плавающей точкой
@@ -286,10 +210,12 @@ print_matrix:
             call printf
             add esp, 12 ; Удаляем format и число с плавающей точкой из стека
 
-            pop ecx
+            pop ecx ; Восстанавливаем значение регистра ecx
+            pop ebx ; Восстанавливаем значение регистра ebx
+            pop eax ; Восстанавливаем значение регистра eax
 
-            inc ebx
-            jmp _print_columns_loop
+            dec ebx
+            jmp _print_rows_loop
 
         _end_row:
             push ecx
@@ -302,10 +228,8 @@ print_matrix:
             pop ecx
            
             inc ecx
-            jmp _print_rows_loop
+            jmp _print_columns_loop
                   
-
-
     _end_print:
                
     push 0
