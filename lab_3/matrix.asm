@@ -4,10 +4,12 @@ extern scanf, printf, exit, putchar
 
 section .data
 	order_input_message db "Enter the order of the square matrix M: ", 0
+        original_matrix_message db "Original matrix:", 10, 0
 	order_input_format  db "%d", 0
 	string_output_format dd "%s", 10, 0
 	element_input_message db "Enter element [%d, %d]: ", 0
 	element_format      db "%lf", 0
+        element_format_space db "        %.2lf", 0
 
 	tmp_output          db "Size in bytes: %d", 10, 0
 
@@ -95,9 +97,15 @@ input_elements_loop:
         inc ecx
         jmp input_elements_loop
                 
-                                
+
+                                                                                              
         
 print_original_matrix:
+
+     
+    push original_matrix_message
+    push string_output_format
+    call printf    
 
     mov ecx, 1 ; Счётчик строк
     mov edi, [order] ; Порядок матрицы
@@ -121,29 +129,40 @@ print_original_matrix:
             imul edi
             mov ebx, 8
             imul ebx
+            
+            
 
             pop ebx
             lea esi, [matrix + eax + 8*(ebx-1)]
 
             pop eax ; Восстанавливаем значение регистра eax
+            
+            push ecx
 
             fld qword [esi] ; Загружаем значение в стек FPU
 
             sub esp, 8 ; Выделяем место в стеке для числа с плавающей точкой
             fstp qword [esp] ; Сохраняем значение из стека FPU в стек
 
-            push element_format
+            push element_format_space
             call printf
             add esp, 12 ; Удаляем format и число с плавающей точкой из стека
+
+            pop ecx
 
             inc ebx
             jmp print_columns_loop
 
         end_row:
+            push ecx
+        
             ; Печатаем новую строку
             push 10 ; ASCII код для новой строки
             call putchar
-
+            add esp, 4
+            
+            pop ecx
+           
             inc ecx
             jmp print_rows_loop
 
