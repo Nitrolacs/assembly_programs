@@ -51,18 +51,20 @@ count_loop:
     
     cmp eax, 0 ; сравнить символ с нулем
     je count_done ; если ноль, то конец строки, выйти из цикла
+    cmp eax, 10
+    je count_loop
     cmp eax, ' ' ; сравнить символ с пробелом
     je is_space ; если пробел, то перейти к обработке пробела
     inc edx ; если не пробел, то увеличить количество букв
     test ebx, ebx ; проверить флаг
     jnz count_loop ; если флаг равен 1, то продолжить цикл
     
-    cmp edx, 0
-    jz skip_inc
+    cmp edx, 1
+    je .skip_inc
     
     inc ecx ; если флаг равен 0, то увеличить количество слов
     
-skip_inc:    
+.skip_inc:    
     mov ebx, 1 ; установить флаг в 1
     jmp count_loop ; продолжить 
 is_space:
@@ -71,6 +73,12 @@ is_space:
 
     ; подсчет завершен, вычислить среднюю длину слова
 count_done:
+    
+    cmp edx, 0
+    jz .skip_inc
+    inc ecx
+
+.skip_inc:        
     test ecx, ecx ; проверить количество слов
     jz print_zero ; если равно 0, то перейти к выводу 0
 
