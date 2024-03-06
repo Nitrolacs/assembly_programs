@@ -5,7 +5,7 @@ extern scanf, printf, exit, putchar
 section .data
 	order_input_message db "Enter the order of the square matrix M: ", 0
         original_matrix_message db "Original matrix:", 10, 0
-        matrix_180_message       db "Matrix rotated 90 degrees clockwise:", 10, 0
+        matrix_90_message       db "Matrix rotated 90 degrees clockwise:", 10, 0
 	order_input_format  db "%d", 0
 	string_output_format dd "%s", 10, 0
 	element_input_message db "Enter element [%d, %d]: ", 0
@@ -172,24 +172,24 @@ print_original_matrix:
     end_print:
 
 
-; Поворот матрицы на 180 градусов по часовой стрелке
-rotate_180:
+; Поворот матрицы на 90 градусов по часовой стрелке
+rotate_90:
     mov eax, [order] ; Порядок матрицы
     mov ebx, matrix  ; Указатель на начало матрицы
     mov ecx, 0       ; Счётчик строк
     mov edx, 0       ; Счётчик столбцов
 
-    rotate_180_loop:
+    rotate_90_loop:
         cmp ecx, eax
-        jge end_rotate_180 ; Если все строки обработаны, выходим из цикла
+        jge end_rotate_90 ; Если все строки обработаны, выходим из цикла
 
         mov esi, ebx ; Сохраняем указатель на начало строки
         add ebx, 8   ; Переходим к следующему элементу строки
         inc edx      ; Увеличиваем счётчик столбцов
 
-        rotate_180_inner_loop:
+        rotate_90_inner_loop:
             cmp edx, eax
-            jge end_rotate_180_inner ; Если все столбцы обработаны, переходим к следующей строке
+            jge end_rotate_90_inner ; Если все столбцы обработаны, переходим к следующей строке
 
             push eax ; Сохраняем значение регистра eax
             push ebx ; Сохраняем значение регистра ebx
@@ -220,9 +220,9 @@ rotate_180:
 
             add ebx, 8 ; Переходим к следующему элементу строки
             inc edx    ; Увеличиваем счётчик столбцов
-            jmp rotate_180_inner_loop
+            jmp rotate_90_inner_loop
 
-        end_rotate_180_inner:
+        end_rotate_90_inner:
             mov ebx, esi ; Восстанавливаем указатель на начало строки
             add ebx, eax ; Переходим к следующей строке
             add ebx, eax
@@ -234,14 +234,14 @@ rotate_180:
             add ebx, eax ; Умножаем на 8, так как каждый элемент занимает 8 байт
             mov edx, 0   ; Обнуляем счётчик столбцов
             inc ecx      ; Увеличиваем счётчик строк
-            jmp rotate_180_loop
+            jmp rotate_90_loop
 
-    end_rotate_180:
+    end_rotate_90:
     
         
 print_matrix:
    
-    push matrix_180_message
+    push matrix_90_message
     push string_output_format
     call printf
        
