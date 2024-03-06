@@ -233,7 +233,71 @@ print_90_matrix:
             jmp .print_columns_loop
                   
     .end_print:
-               
+              
+print_180_matrix:
+   
+    push matrix_180_message
+    push string_output_format
+    call printf
+       
+    mov ecx, [order] ; Счётчик строк
+    mov edi, [order] ; Порядок матрицы
+    mov esi, matrix ; Указатель на начало матрицы
+
+    .print_rows_loop:
+        cmp ecx, 1
+        jb .end_print  ; Если все строки напечатаны, то выходим из цикла
+
+        mov ebx, [order] ; Счётчик колонок
+
+        .print_columns_loop:
+            cmp ebx, 1
+            jb .end_row ; Если все колонки напечатаны, переходим к следующей строке
+
+            ; Расчет положения элемента в массиве
+            push eax ; Сохраняем значение регистра eax
+            push ebx ; Сохраняем значение регистра ebx
+            push ecx ; Сохраняем значение регистра ecx
+
+            mov eax, ecx
+            dec eax
+            imul edi
+            mov ecx, 8
+            imul ecx
+            
+            lea esi, [matrix + eax + 8*(ebx-1)]
+            
+            fld qword [esi] ; Загружаем значение в стек FPU
+
+            sub esp, 8 ; Выделяем место в стеке для числа с плавающей точкой
+            fstp qword [esp] ; Сохраняем значение из стека FPU в стек
+
+            push element_format_space
+            call printf
+            add esp, 12 ; Удаляем format и число с плавающей точкой из стека
+
+            pop ecx ; Восстанавливаем значение регистра ecx
+            pop ebx ; Восстанавливаем значение регистра ebx
+            pop eax ; Восстанавливаем значение регистра eax
+
+            dec ebx
+            jmp .print_columns_loop
+
+        .end_row:
+            push ecx
+        
+            ; Печатаем новую строку
+            push 10 ; ASCII код для новой строки
+            call putchar
+            add esp, 4
+            
+            pop ecx
+           
+            dec ecx
+            jmp .print_rows_loop
+                  
+    .end_print:               
+                 
 print_270_matrix:
    
     push matrix_270_message
