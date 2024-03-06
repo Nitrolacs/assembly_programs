@@ -6,6 +6,8 @@ section .data
 	order_input_message db "Enter the order of the square matrix M: ", 0
         original_matrix_message db "Original matrix:", 10, 0
         matrix_90_message       db "Matrix rotated 90 degrees clockwise:", 10, 0
+        matrix_180_message       db "Matrix rotated 180 degrees clockwise:", 10, 0
+        matrix_270_message       db "Matrix rotated 270 degrees clockwise:", 10, 0
 	order_input_format  db "%d", 0
 	string_output_format dd "%s", 10, 0
 	element_input_message db "Enter element [%d, %d]: ", 0
@@ -167,7 +169,7 @@ print_original_matrix:
                   
     end_print:
     
-print_matrix:
+print_90_matrix:
    
     push matrix_90_message
     push string_output_format
@@ -177,15 +179,15 @@ print_matrix:
     mov edi, [order] ; Порядок матрицы
     mov esi, matrix ; Указатель на начало матрицы
 
-    _print_columns_loop:
+    .print_columns_loop:
         cmp ecx, edi 
-        ja _end_print ; Если все колонки напечатаны, то выходим из цикла
+        ja .end_print ; Если все колонки напечатаны, то выходим из цикла
 
         mov ebx, [order] ; Счётчик строк
 
-        _print_rows_loop:
+        .print_rows_loop:
             cmp ebx, 1
-            jb _end_row ; Если все строки напечатаны, переходим к следующему столбцу
+            jb .end_row ; Если все строки напечатаны, переходим к следующему столбцу
 
 
             ; Расчет положения элемента в массиве
@@ -215,9 +217,9 @@ print_matrix:
             pop eax ; Восстанавливаем значение регистра eax
 
             dec ebx
-            jmp _print_rows_loop
+            jmp .print_rows_loop
 
-        _end_row:
+        .end_row:
             push ecx
         
             ; Печатаем новую строку
@@ -228,10 +230,75 @@ print_matrix:
             pop ecx
            
             inc ecx
-            jmp _print_columns_loop
+            jmp .print_columns_loop
                   
-    _end_print:
+    .end_print:
                
+print_270_matrix:
+   
+    push matrix_270_message
+    push string_output_format
+    call printf
+       
+    mov ecx, [order] ; Счётчик колонок
+    mov edi, [order] ; Порядок матрицы
+    mov esi, matrix ; Указатель на начало матрицы
+
+    .print_columns_loop:
+        cmp ecx, 1 
+        jb .end_print ; Если все колонки напечатаны, то выходим из цикла
+
+        mov ebx, 1 ; Счётчик строк
+
+        .print_rows_loop:
+        
+            cmp ebx, edi
+            ja .end_row
+
+            ; Расчет положения элемента в массиве
+            push eax ; Сохраняем значение регистра eax
+            push ebx ; Сохраняем значение регистра ebx
+            push ecx ; Сохраняем значение регистра ecx
+
+            mov eax, ebx
+            dec eax
+            imul edi
+            mov ebx, 8
+            imul ebx
+            
+            lea esi, [matrix + eax + 8*(ecx-1)]
+            
+            fld qword [esi] ; Загружаем значение в стек FPU
+
+            sub esp, 8 ; Выделяем место в стеке для числа с плавающей точкой
+            fstp qword [esp] ; Сохраняем значение из стека FPU в стек
+
+            push element_format_space
+            call printf
+            add esp, 12 ; Удаляем format и число с плавающей точкой из стека
+
+            pop ecx ; Восстанавливаем значение регистра ecx
+            pop ebx ; Восстанавливаем значение регистра ebx
+            pop eax ; Восстанавливаем значение регистра eax
+
+            inc ebx
+            jmp .print_rows_loop
+
+        .end_row:
+            push ecx
+        
+            ; Печатаем новую строку
+            push 10 ; ASCII код для новой строки
+            call putchar
+            add esp, 4
+            
+            pop ecx
+           
+            dec ecx
+            jmp .print_columns_loop
+                  
+    .end_print:
+                              
     push 0
     call exit
 
