@@ -116,7 +116,7 @@ result_atoi:
 	jmp .top ; until done
 .done:
 	add eax, 99
-
+	
 	push eax
 	lea eax, [edi + Ticket.Date] ; Дата
     push eax
@@ -127,7 +127,31 @@ result_atoi:
     push read_ticket_2 ; Формат строки
     call printf
     add esp, 20 ; Очистка стека
-    	
+
+itoa:
+    ; Сохраняем регистры
+    pusha
+
+    ; Переменные для цикла
+    mov ecx, 10
+    mov edi, buffer + 4 - 1
+    mov byte [edi], 0
+
+    ; Цикл преобразования
+convert_loop:
+    xor edx, edx
+    div ecx
+    add dl, '0'
+    dec edi
+    mov [edi], dl
+    test eax, eax
+    jnz convert_loop
+
+    ; Восстанавливаем регистры
+    popa
+
+	mov [edi + Ticket.Cost], edi
+
 				
     ; Записать данные в файл
     mov eax, 4 ; sys_write
