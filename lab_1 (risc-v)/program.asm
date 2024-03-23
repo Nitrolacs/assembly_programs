@@ -60,11 +60,13 @@ _start:
 	calculate_y2:
 		
 		# x / a
-		div a5, t3, t2
-		li a6, 3
 		
-		# Проверяем: x / a > 3
-		bgt a5, a6, x_div_a_more_than_3
+		li a7, 3
+		mul a6, t2, a7
+		
+		# x > a * 3
+		# Проверяем: x > a * 3
+		bgt t3, a6, x_div_a_more_than_3
 		
 		# x / a <= 3
 		x_div_a_less_than_or_equal_to_3:
