@@ -3,10 +3,10 @@
 .data
 	filename: .asciz "matrix.bin"
 	matrix_values:
-			.word 3, 4 	
-			.word -22, 9, 17, 10
-			.word -10, 5, 43, 99
-			.word 55, 3, -10, -16
+			.word 3, 3 	
+			.word -22, 9, 17
+			.word -10, 5, 43
+			.word 55, 3, -10
 	
 .text
 _start:

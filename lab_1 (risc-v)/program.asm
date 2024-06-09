@@ -1,9 +1,9 @@
 .global _start
 
 .data
-	enter_message_x: .asciz "Enter: x = "   
+	enter_message_x: .asciz "Введите: x = "   
 	enter_message_a: .asciz "Enter: a = "
-	result:          .asciz "y = "
+	result:          .asciz "Результат: y = "
 	newline:         .asciz "\n"
 
 .text
